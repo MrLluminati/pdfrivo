@@ -34,3 +34,11 @@ Consider AdSense and voluntary donations after launch, content quality, privacy 
 ## Known limitations
 
 Split by groups creates one PDF per comma-delimited range. Multiple groups are returned as a ZIP. Basic watermark fonts handle printable ASCII only. Lossy image outputs may be larger than originals. Browser memory may constrain file sizes. PDF transformations can affect sophisticated document features. Always inspect outputs.
+
+## QA improvements (Phase 1 follow-up)
+
+- Added PDF and image processing unit tests using generated sample files and mocked browser Canvas.
+- Changed Split PDF default to **all pages** (up to 200) to avoid silently omitting pages.
+- Corrected PDF and Image header navigation to apply category filters and scroll to the tool catalogue.
+- Display image output size compared with the original; compression can sometimes increase file size.
+- Manual cross-browser and complex-document verification is still pending.

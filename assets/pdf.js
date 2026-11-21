@@ -67,7 +67,10 @@ export async function processPdf(id, files, values) {
 
   const pdf=await loadPdf(files[0]);
   if(id==='split-pdf') {
-    const groups=parseGroups(values.ranges,pdf.getPageCount());
+    const count=pdf.getPageCount();
+    const allPages=String(values.ranges||'').trim().toLowerCase()==='all';
+    if(allPages&&count>200)throw new Error('For a document over 200 pages, enter specific page groups instead of splitting all pages at once.');
+    const groups=allPages?Array.from({length:count},(_,i)=>[i]):parseGroups(values.ranges,count);
     const results=[];
     for(let i=0;i<groups.length;i++) {
       const out=await PDFDocument.create();

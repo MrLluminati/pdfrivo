@@ -50,6 +50,18 @@ function home() {
     document.querySelector('#tool-count').textContent=shown.length+' tool'+(shown.length===1?'':'s');
     document.querySelector('#no-results').classList.toggle('hidden',shown.length!==0);
   }
+  // Main navigation targets category filters, rather than nonexistent anchor elements.
+  function syncCategoryFromHash() {
+    const category=location.hash==='#pdf-tools'?'PDF tools':location.hash==='#image-tools'?'Image tools':null;
+    if(!category) return;
+    filter=category;
+    search.value='';
+    document.querySelectorAll('[data-filter]').forEach(b=>b.classList.toggle('active',b.dataset.filter===category));
+    update();
+    requestAnimationFrame(()=>document.querySelector('#tools').scrollIntoView({block:'start'}));
+  }
+  window.addEventListener('hashchange',syncCategoryFromHash);
+  syncCategoryFromHash();
   search.addEventListener('input',update);
   document.querySelectorAll('[data-filter]').forEach(btn=>btn.addEventListener('click',()=>{
     filter=btn.dataset.filter;
@@ -66,7 +78,7 @@ function renderField(field) {
   return '<div class="field"><label for="'+id+'">'+escapeHTML(field.label)+'</label>'+control+(field.hint?'<small>'+escapeHTML(field.hint)+'</small>':'')+'</div>';
 }
 function toolPage(tool) {
-  frame('<div class="container tool-page"><div class="breadcrumb"><a href="/">Home</a> / <a href="/#tools">'+escapeHTML(tool.category)+'</a> / '+escapeHTML(tool.name)+'</div>'+
+  frame('<div class="container tool-page"><div class="breadcrumb"><a href="/">Home</a> / <a href="/#'+(tool.category==='PDF tools'?'pdf-tools':'image-tools')+'">'+escapeHTML(tool.category)+'</a> / '+escapeHTML(tool.name)+'</div>'+
     '<div class="tool-heading"><span class="tool-symbol large '+(tool.category==='Image tools'?'purple':'')+'">'+icon(tool.icon)+'</span><div><h1>'+escapeHTML(tool.name)+'</h1><p>'+escapeHTML(tool.description)+'</p></div></div>'+
     '<div class="work-grid"><section class="workspace" aria-label="File processing workspace">'+
     '<div class="workspace-title"><h2>Upload your '+(tool.category==='PDF tools'&&tool.id!=='images-to-pdf'?'PDF':'file')+(tool.multi?'s':'')+'</h2><span class="local-badge">✓ Processed locally</span></div>'+
@@ -162,7 +174,20 @@ function toolPage(tool) {
       const heading=document.createElement('strong');heading.textContent='Your file is ready';
       const details=document.createElement('p');details.textContent=output.name+' · '+filesize(output.blob.size);
       const link=document.createElement('a');link.className='button primary download';link.href=currentURL;link.download=output.name;link.textContent='Download file ↓';
-      result.append(heading,details,link);
+      result.append(heading,details);
+      if(tool.category==='Image tools') {
+        const before=selected[0].size;
+        if(before>0) {
+          const percent=Math.abs((1-output.blob.size/before)*100);
+          const note=document.createElement('p');
+          note.className='size-note';
+          note.textContent=output.blob.size<=before
+            ? percent.toFixed(1)+'% smaller than the original ('+filesize(before)+').'
+            : percent.toFixed(1)+'% larger than the original ('+filesize(before)+'). Try another quality or format if you need a smaller file.';
+          result.append(note);
+        }
+      }
+      result.append(link);
     } catch(error) {alert(error instanceof Error?error.message:'The operation failed. Please try a different file.',true);}
     finally{button.disabled=false;button.textContent='Process '+tool.name+' →';}
   });

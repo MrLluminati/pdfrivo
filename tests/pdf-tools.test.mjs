@@ -48,6 +48,13 @@ test('split multiple page groups returns valid PDF files inside a ZIP',async()=>
   }
   assert.deepEqual(counts,[2,3]);
 });
+test('split all pages defaults to one PDF per page in a ZIP',async()=>{
+  const out=await processPdf('split-pdf',[await fixture(3)],{ranges:'all'});
+  const zip=await JSZip.loadAsync(await out.blob.arrayBuffer());
+  const parts=Object.values(zip.files).filter(f=>!f.dir);
+  assert.equal(parts.length,3);
+  for(const part of parts) assert.equal((await PDFDocument.load(await part.async('uint8array'))).getPageCount(),1);
+});
 test('invalid split range fails rather than making a corrupt download',async()=>{
   await assert.rejects(processPdf('split-pdf',[await fixture(3)],{ranges:'1-4'}),/range/i);
 });
