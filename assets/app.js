@@ -167,7 +167,7 @@ function toolPage(tool) {
       pdfPreviews.setFiles(selected);
     }).catch(()=>{
       const el=document.getElementById('pdf-preview');
-      if(el){el.classList.remove('hidden');el.querySelector('#pdf-preview-status').textContent='Previews unavailable. The PDF tool can still process your files.';}
+      if(el){el.classList.remove('hidden');const status=el.querySelector('#pdf-preview-status');status.hidden=false;status.classList.add('error');status.textContent='Previews unavailable. The PDF tool can still process your files.';}
     });
   }
   zone.addEventListener('click',()=>input.click());

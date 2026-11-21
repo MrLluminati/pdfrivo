@@ -241,7 +241,7 @@ export function createPdfPreviews(toolId, root) {
     if (field && pageCount) syncSelection();
     else summary.textContent = totalPages + ' pages across ' + files.length + ' file' + (files.length===1?'':'s') + '. Files merge in the order shown above.';
     setStatus(warnings.join(' '),Boolean(warnings.length));
-    if (toolId !== 'merge-pdf') selectAll.hidden = !pageCount;
+    if (selectAll) selectAll.hidden = toolId === 'merge-pdf' || toolId === 'delete-pdf-pages' || !pageCount;
     activateObserver();
   }
 
