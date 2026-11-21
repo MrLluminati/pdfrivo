@@ -14,7 +14,7 @@ function frame(content) {
   app.innerHTML='<a class="skip" href="#main">Skip to content</a>'+
     '<header class="site-header"><div class="container header-inner">'+
     '<a class="brand" href="/" aria-label="PDFRivo home"><span class="brand-icon">P</span><span>PDF<span class="brand-accent">Rivo</span></span></a>'+
-    '<nav class="nav" aria-label="Main navigation"><a href="/tools/organize-pdf/">Visual PDF Editor</a><a href="/#pdf-tools">PDF Tools</a><a href="/#image-tools">Image Tools</a><a href="/#why-pdfrivo">Why PDFRivo</a></nav>'+
+    '<nav class="nav" aria-label="Main navigation"><a href="/tools/organize-pdf/">PDF Organizer</a><a href="/#pdf-tools">PDF Tools</a><a href="/#image-tools">Image Tools</a><a href="/#why-pdfrivo">Why PDFRivo</a></nav>'+
     '<span class="privacy-pill">● Files stay on your device</span></div></header>'+
     '<main id="main">'+content+'</main>'+
     '<footer class="footer"><div class="container footer-inner"><div><b>PDFRivo</b><p>Free PDF, image & online tools. Built for practical everyday work.</p></div>'+
@@ -22,7 +22,7 @@ function frame(content) {
 }
 function card(tool) {
   return '<a class="tool-card" href="'+path(tool.id)+'"><span class="tool-symbol '+(tool.category==='Image tools'?'purple':'')+'">'+icon(tool.icon)+'</span>'+
-  '<span class="tool-meta">'+escapeHTML(tool.category)+(tool.featured?' · Visual Editor':tool.popular?' · Popular':'')+'</span><strong>'+escapeHTML(tool.name)+'</strong>'+
+  '<span class="tool-meta">'+escapeHTML(tool.category)+(tool.featured?' · Featured':tool.popular?' · Popular':'')+'</span><strong>'+escapeHTML(tool.name)+'</strong>'+
   '<p>'+escapeHTML(tool.description)+'</p><span class="card-arrow" aria-hidden="true">↗</span></a>';
 }
 function home() {
@@ -32,7 +32,7 @@ function home() {
     '<p>Merge, split, organize, resize and convert files in seconds. No account, no watermarks, and supported files are processed in your browser.</p>'+
     '<label class="visually-hidden" for="tool-search">Search available tools</label>'+
     '<div class="search-box"><span aria-hidden="true">⌕</span><input id="tool-search" type="search" placeholder="Search tools (e.g. merge PDF, resize image)…" autocomplete="off"><span class="search-help">Search tools</span></div>'+
-    '<div class="hero-actions"><a href="/tools/organize-pdf/" class="button primary">Try the Visual PDF Editor ↗</a><span>Arrange, rotate and remove pages with thumbnails</span></div>'+
+    '<div class="hero-actions"><a href="/tools/organize-pdf/" class="button primary">Open PDF Organizer ↗</a><span>Arrange, rotate and remove pages with thumbnails</span></div>'+
     '<div class="hero-trust"><span>✓ Free to use</span><span>✓ No watermarks</span><span>✓ Local file processing</span></div></div></section>'+
     '<section class="container tools-section" id="tools"><div class="section-header"><div><h2>All the tools you need</h2><p>Choose a tool below and work directly in your browser.</p></div><span class="tool-count" id="tool-count">'+TOOLS.length+' tools</span></div>'+
     '<div class="filter-group" role="group" aria-label="Filter tools"><button class="filter active" data-filter="all" type="button">All tools</button><button class="filter" data-filter="PDF tools" type="button">PDF tools</button><button class="filter" data-filter="Image tools" type="button">Image tools</button></div>'+
@@ -83,7 +83,7 @@ function toolPage(tool) {
     '<div class="tool-heading"><span class="tool-symbol large '+(tool.category==='Image tools'?'purple':'')+'">'+icon(tool.icon)+'</span><div><h1>'+escapeHTML(tool.name)+'</h1><p>'+escapeHTML(tool.description)+'</p></div></div>'+
     '<div class="work-grid"><section class="workspace" aria-label="File processing workspace">'+
     (['merge-pdf','split-pdf','rotate-pdf','delete-pdf-pages'].includes(tool.id) ?
-      '<div class="visual-shortcut"><span>▦</span><div><strong>Prefer to edit PDF pages visually?</strong><p>See page thumbnails and rearrange, rotate or remove pages.</p></div><a href="/tools/organize-pdf/">Open visual editor ↗</a></div>' : '')+
+      '<div class="visual-shortcut"><span>▦</span><div><strong>Want to organize PDF pages?</strong><p>See page thumbnails and rearrange, rotate or remove pages.</p></div><a href="/tools/organize-pdf/">Open PDF Organizer ↗</a></div>' : '')+
     '<div class="workspace-title"><h2>Upload your '+(tool.category==='PDF tools'&&tool.id!=='images-to-pdf'?'PDF':'file')+(tool.multi?'s':'')+'</h2><span class="local-badge">✓ Processed locally</span></div>'+
     '<input id="files" class="visually-hidden" type="file" accept="'+escapeHTML(tool.accept)+'" '+(tool.multi?'multiple':'')+'>'+
     '<div class="dropzone" role="button" tabindex="0" aria-label="Choose files or drag and drop"><span class="upload-mark">⇧</span><strong>Drop '+(tool.multi?'files':'a file')+' here</strong><p>or click to browse your device</p><span class="fake-button">Choose file'+(tool.multi?'s':'')+'</span></div>'+
@@ -199,8 +199,8 @@ function toolPage(tool) {
 
 function visualOrganizerPage() {
   frame('<section class="container organizer-page">'+
-    '<div class="breadcrumb"><a href="/">Home</a> / <a href="/#pdf-tools">PDF tools</a> / Visual PDF Organizer</div>'+
-    '<div class="organizer-heading"><div class="tool-symbol large">▦</div><div class="organizer-title"><div class="eyebrow">Visual PDF editing · No account</div><h1>Organize your PDF pages visually</h1><p>Drag pages to reorder, rotate or remove individual pages, then export a clean PDF. Everything happens in your browser.</p></div></div>'+
+    '<div class="breadcrumb"><a href="/">Home</a> / <a href="/#pdf-tools">PDF tools</a> / PDF Organizer</div>'+
+    '<div class="organizer-heading"><div class="tool-symbol large">▦</div><div class="organizer-title"><div class="eyebrow">PDF page editing · No account</div><h1>Organize your PDF pages</h1><p>Drag pages to reorder, rotate or remove individual pages, then export a clean PDF. Everything happens in your browser.</p></div></div>'+
     '<div class="organizer-workspace">'+
       '<div class="organizer-start"><div id="visual-dropzone" class="visual-dropzone" role="button" tabindex="0" aria-label="Choose PDF files or drop files here"><div class="visual-upload-illustration" aria-hidden="true"><span>▤</span><span>▤</span><span>▤</span></div><strong>Drop your PDF files here</strong><p>Or click this area to select PDFs. Add more files at any time.</p><span class="visual-pick">Choose PDF files</span><small>Files stay on your device · Up to 200 pages and 100 MB per workspace</small></div>'+
       '<input id="visual-file-input" class="visually-hidden" type="file" accept=".pdf,application/pdf" multiple>'+
@@ -221,11 +221,11 @@ function visualOrganizerPage() {
       '<div class="visual-export-bar"><div><strong>Ready to save?</strong><p>Export every remaining page, or only those you selected, in the order shown above.</p></div><div class="visual-export-actions"><button type="button" id="visual-export-selected" class="button secondary" disabled>Export selected pages</button><button type="button" id="visual-export" class="button primary" disabled>Download organized PDF</button></div></div>'+
       '<div id="organizer-result" class="visual-result" role="status" aria-live="polite" hidden></div>'+
     '</div>'+
-    '<article class="tool-info visual-info"><h2>How to organize PDF pages</h2><p>Choose one or more PDF files. Each original page appears as a thumbnail, in the current output order. Drag a page to another position or use the left/right arrows for accessible rearrangement. Rotate individual pages with the rotate button, remove pages you do not need, and select pages to export a smaller document.</p><h3>Are my files uploaded?</h3><p>No. This visual editor uses PDF.js for local page previews and pdf-lib to build the final PDF inside your browser. The original files are not modified or transmitted to a PDF processing server.</p><h3>What are the limits?</h3><p>The visual workspace currently supports up to 200 pages, 50 MB per individual PDF and 100 MB of combined input, to reduce browser memory problems. Password-protected or damaged documents may not load. After export, verify page orientation, annotations, form fields and digital signatures in important documents; these features may not survive editing unchanged.</p></article>'+
+    '<article class="tool-info visual-info"><h2>How to organize PDF pages</h2><p>Choose one or more PDF files. Each original page appears as a thumbnail, in the current output order. Drag a page to another position or use the left/right arrows for accessible rearrangement. Rotate individual pages with the rotate button, remove pages you do not need, and select pages to export a smaller document.</p><h3>Are my files uploaded?</h3><p>No. PDF Organizer uses PDF.js for local page previews and pdf-lib to build the final PDF inside your browser. The original files are not modified or transmitted to a PDF processing server.</p><h3>What are the limits?</h3><p>This workspace currently supports up to 200 pages, 50 MB per individual PDF and 100 MB of combined input, to reduce browser memory problems. Password-protected or damaged documents may not load. After export, verify page orientation, annotations, form fields and digital signatures in important documents; these features may not survive editing unchanged.</p></article>'+
   '</section>');
   import('./organizer.js').then(({initOrganizer})=>initOrganizer()).catch(error=>{
     const status=document.querySelector('#organizer-status');
-    if(status){status.hidden=false;status.className='organizer-status error';status.textContent='The visual editor could not load. Please refresh the page or try an updated browser.';}
+    if(status){status.hidden=false;status.className='organizer-status error';status.textContent='PDF Organizer could not load. Please refresh the page or try an updated browser.';}
     console.error('PDFRivo organizer:',error);
   });
 }
