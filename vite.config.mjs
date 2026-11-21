@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import { resolve } from 'node:path';
 
 const slugs = [
-  'merge-pdf', 'split-pdf', 'rotate-pdf', 'delete-pdf-pages',
+  'organize-pdf', 'merge-pdf', 'split-pdf', 'rotate-pdf', 'delete-pdf-pages',
   'number-pdf', 'watermark-pdf', 'images-to-pdf',
   'resize-image', 'compress-image', 'convert-image', 'crop-image'
 ];

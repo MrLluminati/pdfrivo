@@ -46,3 +46,7 @@ See [docs/ROADMAP.md](docs/ROADMAP.md). New features should be developed in PRs 
 ## License
 
 No project license has been selected. Third-party dependencies retain their own licenses.
+
+## Visual PDF Organizer (Phase 2)
+
+Visual PDF editing is developed on `feat/visual-pdf-interface` pending visual QA. It uses locally bundled PDF.js for thumbnails and pdf-lib for export. Features: multiple PDF imports, drag-and-drop page ordering, keyboard-friendly move controls, individual page rotation and deletion, page selection and partial export, and reset. Visual workspace caps: 200 pages, 50 MB per source PDF and 100 MB total for performance. The source documents stay on the user's device.

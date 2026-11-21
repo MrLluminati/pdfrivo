@@ -42,3 +42,16 @@ Split by groups creates one PDF per comma-delimited range. Multiple groups are r
 - Corrected PDF and Image header navigation to apply category filters and scroll to the tool catalogue.
 - Display image output size compared with the original; compression can sometimes increase file size.
 - Manual cross-browser and complex-document verification is still pending.
+
+## Phase 2 — Visual PDF Interface v1
+
+- [x] Visual PDF organizer route and homepage shortcut
+- [x] Local PDF.js page thumbnail rendering with lazy loading
+- [x] Drag-and-drop reordering plus accessible arrow controls
+- [x] Per-page rotation, page removal and multi-file imports
+- [x] Selection, partial export, reset and final PDF download
+- [x] Automated exported-document order/rotation tests
+- [ ] Manual Chrome, Firefox, Safari and mobile QA
+- [ ] Large and image-heavy file benchmarks
+- [ ] Review annotations, form fields and existing signatures
+- [ ] Integrate visual previews with all specialized PDF tools

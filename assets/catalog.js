@@ -1,4 +1,5 @@
 export const TOOLS = [
+  {id:'organize-pdf',name:'Visual PDF Organizer',category:'PDF tools',icon:'organize',featured:true,popular:true,description:'Reorder, rotate, remove and extract PDF pages using visual thumbnails.',accept:'.pdf,application/pdf',multi:true,fields:[]},
   {id:'merge-pdf',name:'Merge PDF',category:'PDF tools',icon:'layers',popular:true,description:'Combine PDF files into one document in the order you choose.',accept:'.pdf,application/pdf',multi:true,fields:[]},
   {id:'split-pdf',name:'Split PDF',category:'PDF tools',icon:'scissors',popular:true,description:'Split a PDF into separate files using page ranges.',accept:'.pdf,application/pdf',fields:[{id:'ranges',label:'Page groups',kind:'text',value:'all',hint:'Use all for one PDF per page (up to 200), or enter groups such as 1-3, 4, 5-8.'}]},
   {id:'rotate-pdf',name:'Rotate PDF',category:'PDF tools',icon:'rotate',description:'Rotate every page of a PDF by 90°, 180°, or 270°.',accept:'.pdf,application/pdf',fields:[{id:'angle',label:'Clockwise rotation',kind:'select',value:'90',options:[['90','90°'],['180','180°'],['270','270°']]}]},
