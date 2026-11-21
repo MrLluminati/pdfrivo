@@ -102,3 +102,33 @@
 @media(max-width:620px){.organizer-page{padding-top:24px}.organizer-heading{align-items:flex-start;gap:11px}.organizer-heading h1{font-size:27px}.organizer-heading p{font-size:12px}.organizer-heading .tool-symbol{width:48px;height:48px;font-size:22px}.organizer-start{padding:15px 15px 0}.visual-dropzone{padding:23px 14px}.visual-toolbar{padding:16px 15px}.organizer-status{margin:13px 15px 0}.source-list{padding:12px 15px 0}.visual-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;padding:15px}.visual-preview{height:155px;padding:5px}.visual-tile{padding:7px}.visual-tile.selected,.visual-tile.drag-target{padding:6px}.visual-tile-actions{gap:3px}.visual-tile-action{height:28px;font-size:14px}.visual-tips{padding:13px 15px 0;gap:5px}.visual-tips span{font-size:10px}.visual-empty{margin:16px 15px}.visual-export-bar{padding:18px 15px}.visual-export-actions .button{flex:1;min-width:125px}.visual-shortcut{flex-wrap:wrap}.visual-shortcut a{margin-left:47px}.visual-result{margin:15px}.hero-actions{padding:0 8px}}
 @media(max-width:390px){.visual-grid{grid-template-columns:1fr 1fr}.visual-preview{height:142px}.visual-actions .button{font-size:10px;padding:9px}}
 @media(prefers-reduced-motion:reduce){.preview-frame img{transition:none}}
+
+
+/* Tool-level PDF previews — an optional progressive enhancement. */
+.pdf-inline-preview{margin:19px 0 18px;border:1px solid #dde8f6;background:linear-gradient(180deg,#f9fbff,#fff);border-radius:13px;padding:16px}
+.pdf-preview-heading{display:flex;align-items:center;justify-content:space-between;gap:13px;margin-bottom:12px}
+.pdf-preview-heading h3{font-size:15px;color:#243f62;letter-spacing:-.25px;margin:0}
+.pdf-preview-heading p{font-size:11px;color:#7286a1;margin:5px 0 0;line-height:1.5}
+.pdf-preview-all{border:1px solid #b9cdec;background:#f0f6ff;color:#315f9b;border-radius:8px;padding:8px 11px;font-size:11px;font-weight:750;cursor:pointer}
+.pdf-preview-all:hover{background:#e1edff}
+.pdf-preview-status{margin:0 0 11px;font-size:11px;color:#647c9f;line-height:1.5}
+.pdf-preview-status.error{color:#9d5252}
+.pdf-preview-file{margin-bottom:14px}
+.pdf-preview-file-head{display:flex;align-items:center;gap:10px;justify-content:space-between;min-width:0;background:#edf4ff;border:1px solid #e1eafb;border-radius:8px;padding:8px 10px;margin-bottom:9px}
+.pdf-preview-file-head strong{font-size:11px;color:#34527a;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
+.pdf-preview-file-head>span{color:#7388a2;font-size:11px;white-space:nowrap}
+.pdf-preview-strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(116px,1fr));gap:11px}
+.pdf-page-thumbnail{display:flex;min-width:0;flex-direction:column;align-items:stretch;gap:8px;padding:8px 7px;border:1px solid #dbe5f1;background:#fff;border-radius:10px;text-align:center;color:#5c7392;position:relative}
+button.pdf-page-thumbnail{cursor:pointer}
+button.pdf-page-thumbnail:hover{border-color:#739ff0;background:#f6faff}
+button.pdf-page-thumbnail:focus-visible,.pdf-preview-all:focus-visible{outline:3px solid #80a9ed;outline-offset:2px}
+.pdf-page-thumbnail.is-targeted{border:2px solid #3478e8;padding:7px 6px;background:#f1f7ff}
+.pdf-page-thumbnail.is-targeted::after{content:'✓';position:absolute;top:12px;right:12px;color:white;background:#3277df;border-radius:50%;width:21px;height:21px;display:grid;place-items:center;font-size:12px;font-weight:900;box-shadow:0 2px 5px #2259a830}
+.pdf-page-frame{display:flex;align-items:center;justify-content:center;min-height:165px;height:165px;background:#eef2f8;border-radius:6px;overflow:hidden}
+.pdf-page-frame canvas{display:block;max-width:100%;max-height:100%;object-fit:contain;background:white;box-shadow:0 2px 9px #23436b26;transition:transform .18s ease}
+.pdf-preview-loading{font-size:10px;color:#8898ad}
+.pdf-preview-page-label{font-size:11px;font-weight:700;color:#547295}
+.pdf-preview-tip,.pdf-preview-note{font-size:11px;color:#7286a0;line-height:1.55;margin:7px 0 0}
+.pdf-preview-note{margin-bottom:12px}
+@media(max-width:620px){.pdf-inline-preview{padding:12px}.pdf-preview-strip{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.pdf-page-frame{height:150px;min-height:150px}}
+@media(prefers-reduced-motion:reduce){.pdf-page-frame canvas{transition:none}}

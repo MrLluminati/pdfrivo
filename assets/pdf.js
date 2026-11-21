@@ -93,7 +93,12 @@ export async function processPdf(id, files, values) {
   if(id==='rotate-pdf') {
     const angle=validNumber(values.angle,90,270,'Angle');
     if(![90,180,270].includes(angle)) throw new Error('Choose a rotation of 90°, 180°, or 270°.');
-    pdf.getPages().forEach(page=>{
+    const requested=String(values.pages??'all').trim().toLowerCase()==='all'
+      ? pdf.getPageIndices()
+      : parseRanges(values.pages,pdf.getPageCount());
+    const selected=new Set(requested);
+    pdf.getPages().forEach((page,index)=>{
+      if(!selected.has(index))return;
       const current=page.getRotation().angle;
       page.setRotation(degrees(((current+angle)%360+360)%360));
     });

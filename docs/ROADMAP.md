@@ -55,3 +55,14 @@ Split by groups creates one PDF per comma-delimited range. Multiple groups are r
 - [ ] Large and image-heavy file benchmarks
 - [ ] Review annotations, form fields and existing signatures
 - [ ] Integrate visual previews with all specialized PDF tools
+
+## Phase 3 — Inline PDF page previews
+
+- [x] Page thumbnails displayed within Merge, Split, Rotate and Delete PDF Pages
+- [x] Merge PDF previews reflect the file order controlled by existing move buttons
+- [x] Click page thumbnails to generate split/delete page ranges
+- [x] Rotate selected pages rather than only the whole document
+- [x] Page selection parsing and selected-rotation tests
+- [ ] Test with scanned documents, landscape pages and large PDFs
+- [ ] Browser/mobile QA and keyboard accessibility verification
+- [ ] Image tool previews, interactive crop, PDF-to-image and compression
