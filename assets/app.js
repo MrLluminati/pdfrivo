@@ -88,6 +88,17 @@ function toolPage(tool) {
     '<input id="files" class="visually-hidden" type="file" accept="'+escapeHTML(tool.accept)+'" '+(tool.multi?'multiple':'')+'>'+
     '<div class="dropzone" role="button" tabindex="0" aria-label="Choose files or drag and drop"><span class="upload-mark">⇧</span><strong>Drop '+(tool.multi?'files':'a file')+' here</strong><p>or click to browse your device</p><span class="fake-button">Choose file'+(tool.multi?'s':'')+'</span></div>'+
     '<div class="picked hidden" id="picked"><div class="picked-title"><strong>Selected files</strong><button class="text-button" id="clear-files" type="button">Clear all</button></div><div id="file-list"></div></div>'+
+    (['merge-pdf','split-pdf','rotate-pdf','delete-pdf-pages'].includes(tool.id)?
+      '<section class="pdf-inline-preview hidden" id="pdf-preview" aria-label="PDF page thumbnails">'+
+      '<div class="pdf-preview-heading"><div><h3>Page previews</h3><p id="pdf-preview-summary">Loading page thumbnails locally…</p></div>'+
+      '<button type="button" id="pdf-preview-select-all" class="pdf-preview-all" hidden>All pages</button></div>'+
+      '<p id="pdf-preview-status" class="pdf-preview-status" role="status" aria-live="polite" hidden></p>'+
+      '<div id="pdf-preview-grid" class="pdf-preview-grid"></div>'+
+      '<p class="pdf-preview-tip">'+(tool.id==='merge-pdf'?
+        'Files merge in the order listed above. Use ↑ and ↓ next to each file to change the order. For page-level reordering, use PDF Organizer.':
+        tool.id==='split-pdf'?'Click thumbnails to choose pages to extract; each selected page becomes its own file. Use the page groups field below for grouped PDFs.':
+        tool.id==='delete-pdf-pages'?'Click thumbnails to mark pages for deletion. The original PDF is not changed.':
+        'Click thumbnails to choose pages to rotate. Use All pages to rotate the entire PDF.')+'</p></section>' : '')+
     (tool.fields.length?'<h3 class="form-title">Options</h3><div class="fields">'+tool.fields.map(renderField).join('')+'</div>':'')+
     '<div class="process-row"><button type="button" class="button primary" id="process">Process '+escapeHTML(tool.name)+' →</button><span>Nothing is uploaded to PDFRivo.</span></div>'+
     '<div class="result hidden" id="result" role="status" aria-live="polite"></div></section>'+
@@ -98,7 +109,7 @@ function toolPage(tool) {
     '<h3>Is it free?</h3><p>Yes. This tool is available without registration, a watermark or a daily quota. Browser and device memory limitations may still apply.</p></article></div>');
   const input=document.querySelector('#files'),zone=document.querySelector('.dropzone'),list=document.querySelector('#file-list'),
         picked=document.querySelector('#picked'),result=document.querySelector('#result'),button=document.querySelector('#process');
-  let selected=[], currentURL=null, sequence=0, imageDimensions=null;
+  let selected=[], currentURL=null, sequence=0, imageDimensions=null, pdfPreviews=null;
   const alert=(message,error=false)=>{
     result.className='result '+(error?'error':'info');
     result.textContent=message;
@@ -125,6 +136,7 @@ function toolPage(tool) {
       remove.addEventListener('click',()=>{selected.splice(index,1);clearResult();refresh();});
       actions.append(remove);row.append(marker,info,actions);list.append(row);
     });
+    if(pdfPreviews)pdfPreviews.setFiles(selected);
   }
   async function addFiles(items){
     const extensionOK=file=>tool.category==='PDF tools'&&tool.id!=='images-to-pdf'?(/\.pdf$/i.test(file.name)||file.type==='application/pdf'):['image/jpeg','image/png','image/webp'].includes(file.type);
@@ -148,6 +160,15 @@ function toolPage(tool) {
         }
       }catch{alert('The image could not be decoded.',true);}
     }
+  }
+  if(['merge-pdf','split-pdf','rotate-pdf','delete-pdf-pages'].includes(tool.id)){
+    import('./pdf-previews.js').then(({createPdfPreviews})=>{
+      pdfPreviews=createPdfPreviews(tool.id,document.getElementById('pdf-preview'));
+      pdfPreviews.setFiles(selected);
+    }).catch(()=>{
+      const el=document.getElementById('pdf-preview');
+      if(el){el.classList.remove('hidden');const status=el.querySelector('#pdf-preview-status');status.hidden=false;status.classList.add('error');status.textContent='Previews unavailable. The PDF tool can still process your files.';}
+    });
   }
   zone.addEventListener('click',()=>input.click());
   zone.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();input.click();}});

@@ -63,6 +63,17 @@ test('rotate updates page rotation while preserving page count',async()=>{
   const pdf=await readDoc(out);
   assert.deepEqual(pdf.getPages().map(p=>p.getRotation().angle),[90,90]);
 });
+test('rotate a selected page without changing other pages',async()=>{
+  const out=await processPdf('rotate-pdf',[await fixture(3)],{angle:'180',pages:'2'});
+  const pdf=await readDoc(out);
+  assert.deepEqual(pdf.getPages().map(p=>p.getRotation().angle),[0,180,0]);
+});
+test('rotate selected range and reject invalid page input',async()=>{
+  const file=await fixture(4);
+  const out=await processPdf('rotate-pdf',[file],{angle:'90',pages:'1, 3-4'});
+  assert.deepEqual((await readDoc(out)).getPages().map(p=>p.getRotation().angle),[90,0,90,90]);
+  await assert.rejects(processPdf('rotate-pdf',[file],{angle:'90',pages:'5'}),/between 1 and 4/);
+});
 test('delete pages keeps only selected pages',async()=>{
   const out=await processPdf('delete-pdf-pages',[await fixture(4)],{ranges:'2, 4'});
   assert.equal((await readDoc(out)).getPageCount(),2);
