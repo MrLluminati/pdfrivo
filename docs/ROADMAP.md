@@ -66,3 +66,21 @@ Split by groups creates one PDF per comma-delimited range. Multiple groups are r
 - [ ] Test with scanned documents, landscape pages and large PDFs
 - [ ] Browser/mobile QA and keyboard accessibility verification
 - [ ] Image tool previews, interactive crop, PDF-to-image and compression
+
+
+## Phase 3 — Output previews for remaining PDF tools
+
+- [x] Add PDF Page Numbers: actual processed-PDF preview, including starting number and font size
+- [x] Watermark PDF: actual rendered preview reflecting text and opacity
+- [x] Images to PDF: output pages previewed in selected image order with page size and margins
+- [x] Debounced local rendering and explicit refresh button
+- [x] Performance guard for large files or many images; original processing remains available
+- [x] Unit tests for page sample rules and performance limits
+- [ ] Manual preview and final-download comparison in Chrome and mobile browsers
+- [ ] Additional work: PDF to JPG, PDF compression, interactive image crop
+
+### Preview readability follow-up
+
+- [x] Increase default output-preview thumbnails to two columns with larger page rendering
+- [x] Click any output page to inspect full size in a modal, with zoom, previous/next, Escape and arrow key support
+- [ ] Manually confirm zoom and readability on desktop and mobile PDF samples
