@@ -46,7 +46,7 @@ export function createPdfOutputPreviews(toolId, root) {
     '<button type="button" id="pdf-enlarge-next">Next →</button>'+
     '</div></div>';
   document.body.append(dialog);
-  const largeCanvas=dialog.querySelector('#pdf-enlarge-canvas');
+  let largeCanvas=dialog.querySelector('#pdf-enlarge-canvas');
   const largeMessage=dialog.querySelector('#pdf-enlarge-message');
   const positionLabel=dialog.querySelector('#pdf-enlarge-position');
   const zoomLabel=dialog.querySelector('#pdf-enlarge-zoom');
@@ -67,6 +67,11 @@ export function createPdfOutputPreviews(toolId, root) {
     dialog.querySelector('[data-zoom="-1"]').disabled=zoomIndex<=0;
     dialog.querySelector('[data-zoom="1"]').disabled=zoomIndex===zoomLevels.length-1;
     largeMessage.textContent='Rendering page…';
+    // Use a fresh canvas for every navigation/zoom request. A cancelled PDF.js
+    // render may still be settling, and two renders must never share a canvas.
+    const replacement=largeCanvas.cloneNode(false);
+    largeCanvas.replaceWith(replacement);
+    largeCanvas=replacement;
     let page=null, task=null;
     try{
       page=await previewPdf.getPage(viewerPage);
@@ -90,7 +95,7 @@ export function createPdfOutputPreviews(toolId, root) {
         largeMessage.textContent='Could not render this page. Try a different zoom level.';
     }finally{
       if(viewerTask===task)viewerTask=null;
-      try{page?.cleanup();}catch{/* best effort */}
+      if(token===viewerToken){try{page?.cleanup();}catch{/* best effort */}}
     }
   }
   function openEnlarged(pageNumber,button){
@@ -197,7 +202,7 @@ export function createPdfOutputPreviews(toolId, root) {
         if(isStale(token)){page.cleanup();return;}
         const natural=page.getViewport({scale:1});
         const deviceRatio=Math.min(window.devicePixelRatio||1,1.5);
-        const scale=Math.min(158/natural.width,200/natural.height)*deviceRatio;
+        const scale=Math.min(300/natural.width,390/natural.height)*deviceRatio;
         const viewport=page.getViewport({scale});
         const canvas=addCard(number);
         canvas.width=Math.max(1,Math.ceil(viewport.width));
