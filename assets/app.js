@@ -100,6 +100,18 @@ function toolPage(tool) {
         tool.id==='delete-pdf-pages'?'Click thumbnails to mark pages for deletion. The original PDF is not changed.':
         'Click thumbnails to choose pages to rotate. Use All pages to rotate the entire PDF.')+'</p></section>' : '')+
     (tool.fields.length?'<h3 class="form-title">Options</h3><div class="fields">'+tool.fields.map(renderField).join('')+'</div>':'')+
+    (['number-pdf','watermark-pdf','images-to-pdf'].includes(tool.id)?
+      '<section class="pdf-output-preview hidden" id="pdf-output-preview" aria-label="PDF output preview">'+
+      '<div class="pdf-output-heading"><div><h3>Preview your PDF</h3><p id="pdf-output-summary">Generating local page previews…</p></div>'+
+      '<button class="pdf-output-refresh" type="button" id="pdf-output-refresh">↻ Refresh preview</button></div>'+
+      '<p class="pdf-output-status" id="pdf-output-status" role="status" aria-live="polite" hidden></p>'+
+      '<div class="pdf-output-grid" id="pdf-output-grid"></div>'+
+      '<p class="pdf-output-note">'+(tool.id==='images-to-pdf'
+        ? 'The previews reflect image order, paper size and margins. Use the arrows beside your uploaded files to rearrange pages.'
+        : tool.id==='number-pdf'
+          ? 'The preview shows the resulting page numbers and their actual placement. Adjust the starting number or font size above.'
+          : 'The preview reflects the watermark text and opacity. Adjust the values above to see the updated PDF.')+
+      '</p></section>' : '')+
     '<div class="process-row"><button type="button" class="button primary" id="process">Process '+escapeHTML(tool.name)+' →</button><span>Nothing is uploaded to PDFRivo.</span></div>'+
     '<div class="result hidden" id="result" role="status" aria-live="polite"></div></section>'+
     '<aside class="right-panel"><div class="side-card"><h3>How it works</h3><ol><li>Choose '+(tool.multi?'your files':'a file')+' from your device.</li><li>Adjust the available options.</li><li>Process locally and download the result.</li></ol></div>'+
@@ -109,7 +121,7 @@ function toolPage(tool) {
     '<h3>Is it free?</h3><p>Yes. This tool is available without registration, a watermark or a daily quota. Browser and device memory limitations may still apply.</p></article></div>');
   const input=document.querySelector('#files'),zone=document.querySelector('.dropzone'),list=document.querySelector('#file-list'),
         picked=document.querySelector('#picked'),result=document.querySelector('#result'),button=document.querySelector('#process');
-  let selected=[], currentURL=null, sequence=0, imageDimensions=null, pdfPreviews=null;
+  let selected=[], currentURL=null, sequence=0, imageDimensions=null, pdfPreviews=null, pdfOutputPreviews=null;
   const alert=(message,error=false)=>{
     result.className='result '+(error?'error':'info');
     result.textContent=message;
@@ -137,6 +149,7 @@ function toolPage(tool) {
       actions.append(remove);row.append(marker,info,actions);list.append(row);
     });
     if(pdfPreviews)pdfPreviews.setFiles(selected);
+    if(pdfOutputPreviews)pdfOutputPreviews.setFiles(selected);
   }
   async function addFiles(items){
     const extensionOK=file=>tool.category==='PDF tools'&&tool.id!=='images-to-pdf'?(/\.pdf$/i.test(file.name)||file.type==='application/pdf'):['image/jpeg','image/png','image/webp'].includes(file.type);
@@ -168,6 +181,15 @@ function toolPage(tool) {
     }).catch(()=>{
       const el=document.getElementById('pdf-preview');
       if(el){el.classList.remove('hidden');const status=el.querySelector('#pdf-preview-status');status.hidden=false;status.classList.add('error');status.textContent='Previews unavailable. The PDF tool can still process your files.';}
+    });
+  }
+  if(['number-pdf','watermark-pdf','images-to-pdf'].includes(tool.id)){
+    import('./pdf-output-previews.js').then(({createPdfOutputPreviews})=>{
+      pdfOutputPreviews=createPdfOutputPreviews(tool.id,document.getElementById('pdf-output-preview'));
+      pdfOutputPreviews.setFiles(selected);
+    }).catch(()=>{
+      const el=document.getElementById('pdf-output-preview');
+      if(el){el.classList.remove('hidden');const status=el.querySelector('#pdf-output-status');status.hidden=false;status.classList.add('error');status.textContent='Preview unavailable. You can still process and download the PDF.';}
     });
   }
   zone.addEventListener('click',()=>input.click());

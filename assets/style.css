@@ -132,3 +132,22 @@ button.pdf-page-thumbnail:focus-visible,.pdf-preview-all:focus-visible{outline:3
 .pdf-preview-note{margin-bottom:12px}
 @media(max-width:620px){.pdf-inline-preview{padding:12px}.pdf-preview-strip{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.pdf-page-frame{height:150px;min-height:150px}}
 @media(prefers-reduced-motion:reduce){.pdf-page-frame canvas{transition:none}}
+
+
+/* Local output previews for page numbering, watermarks and images-to-PDF. */
+.pdf-output-preview{border:1px solid #dce7f5;background:linear-gradient(180deg,#f9fbff,#fff);border-radius:14px;padding:17px;margin:20px 0 18px}
+.pdf-output-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:13px}
+.pdf-output-heading h3{font-size:15px;color:#243e61;margin:0}
+.pdf-output-heading p{font-size:11px;color:#7890a9;margin:6px 0 0;line-height:1.5}
+.pdf-output-refresh{flex:none;border:1px solid #c6d7f1;background:#fff;color:#315e9e;border-radius:8px;padding:9px 10px;font-size:11px;font-weight:700;cursor:pointer}
+.pdf-output-refresh:hover{background:#ecf3ff}
+.pdf-output-refresh:focus-visible{outline:3px solid #8dafef;outline-offset:2px}
+.pdf-output-status{font-size:11px;color:#536f91;background:#edf5ff;border:1px solid #d8e9ff;padding:10px 12px;border-radius:8px;margin:0 0 12px;line-height:1.6}
+.pdf-output-status.error{background:#fff3f2;border-color:#f1d3d0;color:#9e4141}
+.pdf-output-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(127px,1fr));gap:12px}
+.output-preview-card{background:#fff;border:1px solid #dfe7f1;border-radius:10px;padding:9px;display:flex;flex-direction:column;gap:8px}
+.output-preview-paper{background:#f1f4f9;height:208px;display:flex;justify-content:center;align-items:center;border-radius:6px;padding:8px;overflow:hidden}
+.output-preview-paper canvas{max-width:100%;max-height:100%;object-fit:contain;background:#fff;box-shadow:0 2px 9px #24436c2b}
+.output-preview-label{text-align:center;font-size:11px;font-weight:750;color:#527197}
+.pdf-output-note{font-size:11px;color:#7387a2;line-height:1.6;margin:13px 0 0}
+@media(max-width:620px){.pdf-output-preview{padding:12px}.pdf-output-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.output-preview-paper{height:175px}.pdf-output-heading{flex-wrap:wrap}}
