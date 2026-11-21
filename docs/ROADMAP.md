@@ -78,3 +78,9 @@ Split by groups creates one PDF per comma-delimited range. Multiple groups are r
 - [x] Unit tests for page sample rules and performance limits
 - [ ] Manual preview and final-download comparison in Chrome and mobile browsers
 - [ ] Additional work: PDF to JPG, PDF compression, interactive image crop
+
+### Preview readability follow-up
+
+- [x] Increase default output-preview thumbnails to two columns with larger page rendering
+- [x] Click any output page to inspect full size in a modal, with zoom, previous/next, Escape and arrow key support
+- [ ] Manually confirm zoom and readability on desktop and mobile PDF samples

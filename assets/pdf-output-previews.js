@@ -21,7 +21,106 @@ export function createPdfOutputPreviews(toolId, root) {
   const refreshButton=root.querySelector('#pdf-output-refresh');
   const fields=Array.from(document.querySelectorAll('.fields input,.fields select'));
   let files=[], generation=0, timer=null, running=false, disposed=false;
+  let previewPdf=null, viewerPage=1, viewerZoom=1, viewerToken=0, viewerTask=null, viewerFocus=null;
   const isStale=token=>disposed||token!==generation;
+
+  // Native dialog lets users inspect a PDF at a readable size without
+  // navigating away or uploading any file. The PDF remains in browser memory.
+  const dialog=document.createElement('dialog');
+  dialog.className='pdf-enlarge-dialog';
+  dialog.setAttribute('aria-label','Enlarged PDF page preview');
+  dialog.innerHTML=
+    '<div class="pdf-enlarge-shell"><div class="pdf-enlarge-toolbar">'+
+    '<div class="pdf-enlarge-title"><strong>Page preview</strong><span id="pdf-enlarge-position"></span></div>'+
+    '<div class="pdf-enlarge-controls">'+
+    '<button type="button" data-zoom="-1" aria-label="Zoom out">−</button>'+
+    '<span id="pdf-enlarge-zoom" aria-live="polite">100%</span>'+
+    '<button type="button" data-zoom="1" aria-label="Zoom in">+</button>'+
+    '<button type="button" class="pdf-enlarge-close" aria-label="Close enlarged preview">Close ×</button>'+
+    '</div></div>'+
+    '<div class="pdf-enlarge-scroll"><canvas id="pdf-enlarge-canvas" aria-label="Enlarged PDF page"></canvas>'+
+    '<p id="pdf-enlarge-message" role="status"></p></div>'+
+    '<div class="pdf-enlarge-footer">'+
+    '<button type="button" id="pdf-enlarge-prev">← Previous</button>'+
+    '<span>Scroll to inspect the page · Use ← → to change pages</span>'+
+    '<button type="button" id="pdf-enlarge-next">Next →</button>'+
+    '</div></div>';
+  document.body.append(dialog);
+  const largeCanvas=dialog.querySelector('#pdf-enlarge-canvas');
+  const largeMessage=dialog.querySelector('#pdf-enlarge-message');
+  const positionLabel=dialog.querySelector('#pdf-enlarge-position');
+  const zoomLabel=dialog.querySelector('#pdf-enlarge-zoom');
+  const previous=dialog.querySelector('#pdf-enlarge-prev');
+  const next=dialog.querySelector('#pdf-enlarge-next');
+  const zoomLevels=[0.75,1,1.25,1.5,2];
+
+  async function renderEnlargedPage(){
+    if(!previewPdf||!dialog.open)return;
+    ++viewerToken;
+    const token=viewerToken;
+    if(viewerTask){viewerTask.cancel();viewerTask=null;}
+    positionLabel.textContent='Page '+viewerPage+' of '+previewPdf.numPages;
+    zoomLabel.textContent=Math.round(viewerZoom*100)+'%';
+    previous.disabled=viewerPage<=1;
+    next.disabled=viewerPage>=previewPdf.numPages;
+    const zoomIndex=zoomLevels.indexOf(viewerZoom);
+    dialog.querySelector('[data-zoom="-1"]').disabled=zoomIndex<=0;
+    dialog.querySelector('[data-zoom="1"]').disabled=zoomIndex===zoomLevels.length-1;
+    largeMessage.textContent='Rendering page…';
+    let page=null, task=null;
+    try{
+      page=await previewPdf.getPage(viewerPage);
+      if(token!==viewerToken||!dialog.open)return;
+      const natural=page.getViewport({scale:1});
+      const scale=Math.min(780/natural.width,1050/natural.height)*viewerZoom;
+      const density=Math.min(window.devicePixelRatio||1,1.5);
+      const viewport=page.getViewport({scale:scale*density});
+      largeCanvas.width=Math.max(1,Math.ceil(viewport.width));
+      largeCanvas.height=Math.max(1,Math.ceil(viewport.height));
+      largeCanvas.style.width=Math.ceil(viewport.width/density)+'px';
+      largeCanvas.style.height=Math.ceil(viewport.height/density)+'px';
+      const ctx=largeCanvas.getContext('2d',{alpha:false});
+      if(!ctx)throw new Error('Canvas preview is unavailable.');
+      task=page.render({canvasContext:ctx,viewport});
+      viewerTask=task;
+      await task.promise;
+      if(token===viewerToken&&dialog.open)largeMessage.textContent='';
+    }catch(error){
+      if(token===viewerToken&&dialog.open&&error?.name!=='RenderingCancelledException')
+        largeMessage.textContent='Could not render this page. Try a different zoom level.';
+    }finally{
+      if(viewerTask===task)viewerTask=null;
+      try{page?.cleanup();}catch{/* best effort */}
+    }
+  }
+  function openEnlarged(pageNumber,button){
+    if(!previewPdf||disposed)return;
+    viewerFocus=button;
+    viewerPage=pageNumber;
+    viewerZoom=1;
+    dialog.showModal();
+    renderEnlargedPage();
+  }
+  function closeEnlarged(){
+    if(dialog.open)dialog.close();
+  }
+  dialog.querySelector('.pdf-enlarge-close').addEventListener('click',closeEnlarged);
+  dialog.addEventListener('click',event=>{if(event.target===dialog)closeEnlarged();});
+  dialog.addEventListener('close',()=>{
+    ++viewerToken;
+    viewerTask?.cancel();viewerTask=null;
+    viewerFocus?.focus();viewerFocus=null;
+  });
+  previous.addEventListener('click',()=>{if(viewerPage>1){viewerPage--;renderEnlargedPage();}});
+  next.addEventListener('click',()=>{if(previewPdf&&viewerPage<previewPdf.numPages){viewerPage++;renderEnlargedPage();}});
+  dialog.querySelectorAll('[data-zoom]').forEach(button=>button.addEventListener('click',()=>{
+    const index=zoomLevels.indexOf(viewerZoom)+Number(button.dataset.zoom);
+    if(index>=0&&index<zoomLevels.length){viewerZoom=zoomLevels[index];renderEnlargedPage();}
+  }));
+  dialog.addEventListener('keydown',event=>{
+    if(event.key==='ArrowLeft'&&viewerPage>1){event.preventDefault();viewerPage--;renderEnlargedPage();}
+    if(event.key==='ArrowRight'&&previewPdf&&viewerPage<previewPdf.numPages){event.preventDefault();viewerPage++;renderEnlargedPage();}
+  });
   function setStatus(text,error=false) {
     status.textContent=text;
     status.classList.toggle('error',error);
@@ -31,18 +130,29 @@ export function createPdfOutputPreviews(toolId, root) {
     return Object.fromEntries(fields.map(el=>[el.name,el.type==='checkbox'?el.checked:el.value]));
   }
   function addCard(pageNumber) {
-    const card=document.createElement('div');
+    const card=document.createElement('button');
+    card.type='button';
     card.className='output-preview-card';
+    card.setAttribute('aria-label','Enlarge output page '+pageNumber);
+    card.addEventListener('click',()=>openEnlarged(pageNumber,card));
     const frame=document.createElement('div');frame.className='output-preview-paper';
     const canvas=document.createElement('canvas');canvas.setAttribute('aria-label','Output page '+pageNumber);
     frame.append(canvas);
     const name=document.createElement('span');name.className='output-preview-label';name.textContent='Page '+pageNumber;
-    card.append(frame,name);
+    const hint=document.createElement('span');
+    hint.className='output-preview-enlarge';
+    hint.textContent='⤢ View larger';
+    card.append(frame,name,hint);
     grid.append(card);
     return canvas;
   }
   function schedule(delay=420) {
     ++generation;
+    closeEnlarged();
+    if(previewPdf){
+      const old=previewPdf;previewPdf=null;
+      Promise.resolve(old.destroy()).catch(()=>{});
+    }
     if(timer!==null){clearTimeout(timer);timer=null;}
     grid.replaceChildren();
     if(!files.length) {
@@ -100,7 +210,11 @@ export function createPdfOutputPreviews(toolId, root) {
       if(isStale(token))return;
       summary.textContent=pdf.numPages+' page'+(pdf.numPages===1?'':'s')+' in the output. '+
         (pdf.numPages>numbers.length?'Showing the first '+numbers.length+' pages.':'Showing all pages.');
-      setStatus('Preview updated. The final PDF is created when you click Process.');
+      // Keep the locally generated PDF available for the on-demand enlarged viewer.
+      // On option changes or page exit, the old PDF and its worker are destroyed.
+      previewPdf=pdf;
+      pdf=null;
+      setStatus('Preview updated. Click any page to inspect it at a larger size.');
     } catch(error) {
       if(isStale(token))return;
       grid.replaceChildren();
@@ -126,9 +240,12 @@ export function createPdfOutputPreviews(toolId, root) {
   function dispose(){
     disposed=true;
     generation++;
+    closeEnlarged();
+    if(previewPdf){Promise.resolve(previewPdf.destroy()).catch(()=>{});previewPdf=null;}
     if(timer!==null)clearTimeout(timer);
     files=[];
     grid.replaceChildren();
+    dialog.remove();
   }
   window.addEventListener('pagehide',dispose,{once:true});
   return {setFiles,dispose};

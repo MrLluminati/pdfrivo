@@ -106,6 +106,7 @@ function toolPage(tool) {
       '<button class="pdf-output-refresh" type="button" id="pdf-output-refresh">↻ Refresh preview</button></div>'+
       '<p class="pdf-output-status" id="pdf-output-status" role="status" aria-live="polite" hidden></p>'+
       '<div class="pdf-output-grid" id="pdf-output-grid"></div>'+
+      '<p class="pdf-output-zoom-hint">Select any page thumbnail to open a larger, zoomable preview.</p>'+
       '<p class="pdf-output-note">'+(tool.id==='images-to-pdf'
         ? 'The previews reflect image order, paper size and margins. Use the arrows beside your uploaded files to rearrange pages.'
         : tool.id==='number-pdf'
