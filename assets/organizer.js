@@ -116,7 +116,9 @@ async function addPDFs(fileList) {
     const totalBytes = state.sources.reduce((acc, s)=>acc+s.bytes.byteLength,0) +
       incoming.reduce((acc, f)=>acc+f.size,0);
     if (totalBytes > MAX_TOTAL_BYTES) throw new Error('This workspace supports up to 100 MB of source PDFs.');
-    let staged = state.pages.length;
+    // Count all original source pages, including those temporarily removed from the workspace.
+    // Reset must never restore more pages than the visual limit permits.
+    let staged = state.sources.reduce((total, src) => total + src.numPages, 0);
     for (const file of incoming) {
       const doc = await readPDF(file,staged);
       created.push(doc);
